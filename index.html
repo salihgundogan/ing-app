@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Princess Zeynep's English Kingdom 👑</title>
+  <meta name="description" content="A magical English learning app for Princess Zeynep — Learn English with Luna the fairy!" />
+  <meta name="theme-color" content="#4A0080" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <!-- ═══ Star Particles Background ═══ -->
+  <div id="stars-container" aria-hidden="true"></div>
+
+  <!-- ═══ App Container ═══ -->
+  <div id="app">
+
+    <!-- ═══ Loading Overlay ═══ -->
+    <div id="loading-overlay" class="hidden">
+      <div class="loading-content">
+        <div class="sparkle-loader">✨</div>
+        <p class="loading-text">Luna is working her magic... ✨</p>
+      </div>
+    </div>
+
+    <!-- ═══ Milestone Modal ═══ -->
+    <div id="milestone-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content milestone-card">
+        <div class="milestone-stars">🌟✨🌟</div>
+        <h2 id="milestone-title" class="gold-text">Achievement!</h2>
+        <p id="milestone-message"></p>
+        <button class="btn-gold" onclick="closeMilestoneModal()">Thank you, Luna! 👑</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- ═══ SECTION: Kingdom (Home) ═══ -->
+    <!-- ═══════════════════════════════════ -->
+    <section id="page-kingdom" class="page active">
+      <div class="page-inner">
+        <header class="kingdom-header">
+          <h1 class="gold-text">👑 Princess Zeynep's<br/>English Kingdom</h1>
+          <div class="score-display">
+            <span class="score-label">✨ Royal Points</span>
+            <span id="score-value" class="score-value">0</span>
+          </div>
+        </header>
+
+        <div class="quote-card">
+          <div class="quote-avatar">🧚</div>
+          <p id="luna-quote" class="quote-text">"Every great queen was once a student, Princess! ✨"</p>
+        </div>
+
+        <h2 class="section-title">Your Royal Lessons</h2>
+        <p class="section-subtitle">Kraliyet Dersleriniz</p>
+
+        <div class="module-cards">
+          <div class="module-card" onclick="navigateTo('words')">
+            <div class="module-icon">🔤</div>
+            <h3>Words</h3>
+            <p>Kelimeler</p>
+          </div>
+          <div class="module-card" onclick="navigateTo('grammar')">
+            <div class="module-icon">📜</div>
+            <h3>Grammar</h3>
+            <p>Dilbilgisi</p>
+          </div>
+          <div class="module-card featured" onclick="openConversationPicker()">
+            <div class="module-icon">💬</div>
+            <h3>Conversation Practice</h3>
+            <p>Konuşma Pratiği</p>
+          </div>
+        </div>
+
+        <div class="tip-widget">
+          <span class="tip-label">🧚 Luna says...</span>
+          <p id="luna-tip" class="tip-text"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- ═══ SECTION: Words ═══ -->
+    <!-- ═══════════════════════════════════ -->
+    <section id="page-words" class="page">
+      <div class="page-inner">
+
+        <!-- Topic Selection -->
+        <div id="words-topics" class="sub-page active">
+          <div class="page-header">
+            <h1 class="gold-text">🔤 Words</h1>
+            <p class="subtitle">Kelimeler — Pick a topic!</p>
+          </div>
+          <div id="vocab-topic-grid" class="topic-grid"></div>
+        </div>
+
+        <!-- Flashcards -->
+        <div id="words-flashcards" class="sub-page">
+          <div class="page-header">
+            <button class="btn-back" onclick="showWordsSub('words-topics')">← Back</button>
+            <h2 id="flashcard-topic-title" class="gold-text"></h2>
+            <p class="subtitle">Tap the card to flip! / Kartı çevirmek için dokun!</p>
+          </div>
+          <div class="flashcard-counter">
+            <span id="card-current">1</span> / <span id="card-total">12</span>
+          </div>
+          <div class="flashcard-container">
+            <div id="flashcard" class="flashcard" onclick="flipCard()">
+              <div class="flashcard-front">
+                <span class="flashcard-word" id="fc-english"></span>
+                <span class="flashcard-hint">tap to flip 👆</span>
+              </div>
+              <div class="flashcard-back">
+                <span class="flashcard-word" id="fc-turkish"></span>
+                <p class="flashcard-example" id="fc-example-en"></p>
+                <p class="flashcard-example-tr" id="fc-example-tr"></p>
+              </div>
+            </div>
+          </div>
+          <div class="flashcard-nav">
+            <button class="btn-outline" id="btn-prev-card" onclick="prevCard()">← Previous</button>
+            <button class="btn-gold" id="btn-next-card" onclick="nextCard()">Next →</button>
+          </div>
+          <button class="btn-gold btn-full" id="btn-start-quiz" onclick="startQuiz()" style="display:none;">
+            Start Quiz! 🎯
+          </button>
+        </div>
+
+        <!-- Quiz -->
+        <div id="words-quiz" class="sub-page">
+          <div class="page-header">
+            <h2 class="gold-text">🎯 Quiz Time!</h2>
+            <p class="subtitle">Sınav Zamanı!</p>
+          </div>
+          <div class="quiz-progress">
+            <span id="quiz-question-num">1</span> / <span id="quiz-question-total">8</span>
+          </div>
+          <div class="quiz-container">
+            <p id="quiz-question" class="quiz-question"></p>
+            <div id="quiz-options" class="quiz-options"></div>
+            <div id="quiz-feedback" class="quiz-feedback hidden"></div>
+            <button id="quiz-next-btn" class="btn-gold hidden" onclick="nextQuizQuestion()">Next Question →</button>
+          </div>
+          <!-- Quiz Results -->
+          <div id="quiz-results" class="hidden">
+            <div class="results-card">
+              <h2 class="gold-text">✨ Quiz Complete!</h2>
+              <p class="subtitle">Sınav Tamamlandı!</p>
+              <div class="results-score">
+                <span id="quiz-score">0</span> / <span id="quiz-max">80</span>
+              </div>
+              <p id="quiz-luna-msg" class="luna-message"></p>
+              <button class="btn-gold" onclick="showWordsSub('words-topics')">Back to Topics</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- ═══ SECTION: Grammar ═══ -->
+    <!-- ═══════════════════════════════════ -->
+    <section id="page-grammar" class="page">
+      <div class="page-inner">
+
+        <!-- Topic Selection -->
+        <div id="grammar-topics" class="sub-page active">
+          <div class="page-header">
+            <h1 class="gold-text">📜 Grammar</h1>
+            <p class="subtitle">Dilbilgisi — Pick a grammar topic!</p>
+          </div>
+          <div id="grammar-topic-list" class="topic-list"></div>
+        </div>
+
+        <!-- Explanation -->
+        <div id="grammar-explanation" class="sub-page">
+          <div class="page-header">
+            <button class="btn-back" onclick="showGrammarSub('grammar-topics')">← Back</button>
+            <h2 id="grammar-topic-title" class="gold-text"></h2>
+          </div>
+          <div id="grammar-content" class="grammar-content"></div>
+          <button class="btn-gold btn-full" onclick="startGrammarExercises()">
+            Practice Exercises! 📝
+          </button>
+        </div>
+
+        <!-- Exercises -->
+        <div id="grammar-exercises" class="sub-page">
+          <div class="page-header">
+            <h2 class="gold-text">📝 Practice</h2>
+            <p class="subtitle">Alıştırmalar</p>
+          </div>
+          <div class="exercise-progress">
+            <span id="exercise-num">1</span> / <span id="exercise-total">6</span>
+          </div>
+          <div id="exercise-container" class="exercise-container"></div>
+          <div id="exercise-feedback" class="quiz-feedback hidden"></div>
+          <button id="exercise-next-btn" class="btn-gold hidden" onclick="nextExercise()">Next →</button>
+
+          <!-- Exercise Results -->
+          <div id="exercise-results" class="hidden">
+            <div class="results-card">
+              <h2 class="gold-text">✨ Practice Complete!</h2>
+              <p class="subtitle">Alıştırmalar Tamamlandı!</p>
+              <div class="results-score">
+                <span id="exercise-score">0</span> / <span id="exercise-max">90</span>
+              </div>
+              <p id="exercise-luna-msg" class="luna-message"></p>
+              <button class="btn-gold" onclick="showGrammarSub('grammar-topics')">Back to Topics</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- ═══ SECTION: Conversation ═══ -->
+    <!-- ═══════════════════════════════════ -->
+    <section id="page-conversation" class="page">
+      <div class="page-inner chat-page">
+
+        <!-- Scenario Picker -->
+        <div id="convo-picker" class="sub-page active">
+          <div class="page-header">
+            <button class="btn-back" onclick="navigateTo('kingdom')">← Back</button>
+            <h1 class="gold-text">💬 Conversation</h1>
+            <p class="subtitle">Konuşma Pratiği</p>
+          </div>
+
+          <h3 class="category-title">👸 Royal Roleplay / Kraliyet Rol Yapma</h3>
+          <div id="royal-scenarios" class="scenario-list"></div>
+
+          <h3 class="category-title">🌍 Real World Practice / Gerçek Dünya Pratiği</h3>
+          <div id="realworld-scenarios" class="scenario-list"></div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div id="convo-chat" class="sub-page">
+          <div class="chat-header">
+            <button class="btn-back" onclick="endConversation()">← End</button>
+            <h3 id="convo-title" class="gold-text"></h3>
+          </div>
+          <div id="convo-messages" class="chat-messages"></div>
+          <div class="chat-input-bar">
+            <input type="text" id="convo-input" placeholder="Type your message... / Mesajını yaz..." autocomplete="off" />
+            <button class="btn-send" onclick="sendConvoMessage()">✨</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- ═══ SECTION: Luna Chatbot ═══ -->
+    <!-- ═══════════════════════════════════ -->
+    <section id="page-luna" class="page">
+      <div class="page-inner chat-page">
+        <div class="chat-header">
+          <div class="luna-header-info">
+            <span class="luna-avatar-sm">🧚</span>
+            <div>
+              <h2 class="gold-text">Luna</h2>
+              <p class="subtitle">Your Royal AI Assistant / Kraliyet Yapay Zeka Asistanınız</p>
+            </div>
+          </div>
+        </div>
+        <div id="luna-messages" class="chat-messages">
+          <div class="chat-bubble luna-bubble">
+            <div class="bubble-avatar luna-avatar">🧚</div>
+            <div class="bubble-content">
+              Welcome to the kingdom, Princess Zeynep! 👑✨ I'm Luna, your magical fairy assistant. How can I help you learn English today?
+              <br/><small>(Krallığa hoş geldin, Prenses Zeynep! 👑✨ Ben Luna, senin sihirli peri asistanınım. Bugün İngilizce öğrenmene nasıl yardımcı olabilirim?)</small>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <input type="text" id="luna-input" placeholder="Talk to Luna... / Luna ile konuş..." autocomplete="off" />
+          <button class="btn-send" onclick="sendLunaMessage()">✨</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ Bottom Navigation ═══ -->
+    <nav id="bottom-nav">
+      <button class="nav-btn active" data-page="kingdom" onclick="navigateTo('kingdom')">
+        <span class="nav-icon">🏰</span>
+        <span class="nav-label">Kingdom</span>
+      </button>
+      <button class="nav-btn" data-page="words" onclick="navigateTo('words')">
+        <span class="nav-icon">🔤</span>
+        <span class="nav-label">Words</span>
+      </button>
+      <button class="nav-btn" data-page="grammar" onclick="navigateTo('grammar')">
+        <span class="nav-icon">📜</span>
+        <span class="nav-label">Grammar</span>
+      </button>
+      <button class="nav-btn" data-page="luna" onclick="navigateTo('luna')">
+        <span class="nav-icon">🧚</span>
+        <span class="nav-label">Luna</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="/data/content.js"></script>
+  <script src="/app.js"></script>
+
+  <!-- Register Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
