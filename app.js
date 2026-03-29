@@ -673,7 +673,7 @@ function addConvoBubble(sender, text) {
 
   const avatar = document.createElement('div');
   avatar.className = `bubble-avatar ${sender === 'luna' ? 'luna-avatar' : 'user-avatar'}`;
-  avatar.textContent = sender === 'luna' ? '🧚' : '👑';
+  avatar.textContent = sender === 'luna' ? '👑' : '🧚';
 
   const content = document.createElement('div');
   content.className = 'bubble-content';
@@ -749,7 +749,7 @@ function addLunaBubble(sender, text) {
 
   const avatar = document.createElement('div');
   avatar.className = `bubble-avatar ${sender === 'luna' ? 'luna-avatar' : 'user-avatar'}`;
-  avatar.textContent = sender === 'luna' ? '🧚' : '👑';
+  avatar.textContent = sender === 'luna' ? '👑' : '🧚';
 
   const content = document.createElement('div');
   content.className = 'bubble-content';
