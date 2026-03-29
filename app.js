@@ -166,11 +166,14 @@ async function callAI(type, payload) {
       body: JSON.stringify({ type, payload }),
     });
 
-    if (!resp.ok) throw new Error('API error');
+    if (!resp.ok) {
+      const errorText = await resp.text();
+      throw new Error(`API error ${resp.status}: ${errorText}`);
+    }
     const data = await resp.json();
     return data.result;
   } catch (err) {
-    console.error('AI call failed:', err);
+    console.error('AI call failed:', err.message || err);
     return null;
   } finally {
     hideLoading();
