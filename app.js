@@ -30,6 +30,8 @@ const state = {
 
   // Luna chat
   lunaChatHistory: [],
+  lunaChats: [],
+  currentLunaChatId: null,
 };
 
 // ─── Initialization ───
@@ -42,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderGrammarTopics();
   renderScenarios();
   setupEnterKeys();
+  initLunaChats();
 });
 
 // ─── Star Particles ───
@@ -722,6 +725,7 @@ async function sendLunaMessage() {
   input.value = '';
   addLunaBubble('user', msg);
   state.lunaChatHistory.push({ role: 'Zeynep', text: msg });
+  saveLunaChats();
 
   showTypingIndicator('luna-messages');
 
@@ -736,6 +740,7 @@ async function sendLunaMessage() {
   if (response) {
     addLunaBubble('luna', response);
     state.lunaChatHistory.push({ role: 'Luna', text: response });
+    saveLunaChats();
   } else {
     addLunaBubble('luna', "Oh no, the magic network is down! 🧚 Please try again, Princess! ✨\n(Sihirli ağ çalışmıyor! Lütfen tekrar dene, Prenses!)");
   }
@@ -759,4 +764,134 @@ function addLunaBubble(sender, text) {
   bubble.appendChild(content);
   container.appendChild(bubble);
   container.scrollTop = container.scrollHeight;
+}
+
+// ═══════════════════════════════════════
+// ═══ CHAT DRAWER & MULTI-SESSION ═══
+// ═══════════════════════════════════════
+
+function toggleChatDrawer() {
+  const drawer = document.getElementById('chat-drawer');
+  drawer.classList.toggle('open');
+}
+
+function initLunaChats() {
+  const savedChats = localStorage.getItem('lunaChats');
+  if (savedChats) {
+    state.lunaChats = JSON.parse(savedChats);
+  } else {
+    state.lunaChats = [];
+  }
+  
+  state.currentLunaChatId = localStorage.getItem('currentLunaChatId');
+  
+  if (state.lunaChats.length === 0) {
+    const defaultChat = { id: Date.now().toString(), name: "Sohbet 1", history: [] };
+    state.lunaChats.push(defaultChat);
+    state.currentLunaChatId = defaultChat.id;
+    saveLunaChats();
+  }
+  
+  if (!state.currentLunaChatId || !state.lunaChats.find(c => c.id === state.currentLunaChatId)) {
+    state.currentLunaChatId = state.lunaChats[0].id;
+    saveLunaChats();
+  }
+  
+  renderLunaChats();
+  loadLunaChat(state.currentLunaChatId);
+}
+
+function saveLunaChats() {
+  localStorage.setItem('lunaChats', JSON.stringify(state.lunaChats));
+  localStorage.setItem('currentLunaChatId', state.currentLunaChatId);
+}
+
+function renderLunaChats() {
+  const listEl = document.getElementById('chat-list');
+  if (!listEl) return;
+  
+  listEl.innerHTML = state.lunaChats.map(chat => `
+    <div class="chat-item ${chat.id === state.currentLunaChatId ? 'active' : ''}" onclick="selectLunaChat('${chat.id}')">
+      <span class="chat-item-name">${chat.name}</span>
+      <div class="chat-item-actions">
+        <button class="chat-item-action" onclick="event.stopPropagation(); renameLunaChat('${chat.id}')">✏️</button>
+        <button class="chat-item-action" onclick="event.stopPropagation(); deleteLunaChat('${chat.id}')">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectLunaChat(id) {
+  state.currentLunaChatId = id;
+  saveLunaChats();
+  renderLunaChats();
+  loadLunaChat(id);
+  const drawer = document.getElementById('chat-drawer');
+  drawer.classList.remove('open');
+}
+
+function loadLunaChat(id) {
+  const chat = state.lunaChats.find(c => c.id === id);
+  if (!chat) return;
+  
+  const container = document.getElementById('luna-messages');
+  container.innerHTML = '';
+  
+  state.lunaChatHistory = chat.history;
+  
+  if (chat.history.length === 0) {
+    addLunaBubble('luna', "Welcome to the kingdom, Princess Zeynep! 👑✨ I'm Luna, your magical fairy assistant. How can I help you learn English today?\n(Krallığa hoş geldin, Prenses Zeynep! 👑✨ Ben Luna, senin sihirli peri asistanınım. Bugün İngilizce öğrenmene nasıl yardımcı olabilirim?)");
+  } else {
+    chat.history.forEach(msg => {
+      addLunaBubble(msg.role === 'Luna' ? 'luna' : 'user', msg.text);
+    });
+  }
+}
+
+function createNewLunaChat() {
+  const name = prompt("Yeni sohbet için bir isim girin:", `Sohbet ${state.lunaChats.length + 1}`);
+  if (!name) return;
+  
+  const newChat = { id: Date.now().toString(), name: name.trim(), history: [] };
+  state.lunaChats.push(newChat);
+  state.currentLunaChatId = newChat.id;
+  
+  saveLunaChats();
+  renderLunaChats();
+  loadLunaChat(newChat.id);
+  
+  const drawer = document.getElementById('chat-drawer');
+  drawer.classList.remove('open');
+}
+
+function renameLunaChat(id) {
+  const chat = state.lunaChats.find(c => c.id === id);
+  if (!chat) return;
+  
+  const newName = prompt("Sohbetin yeni ismini girin:", chat.name);
+  if (newName && newName.trim() !== '') {
+    chat.name = newName.trim();
+    saveLunaChats();
+    renderLunaChats();
+  }
+}
+
+function deleteLunaChat(id) {
+  if (!confirm("Bu sohbeti silmek istediğinize emin misiniz?")) return;
+  
+  state.lunaChats = state.lunaChats.filter(c => c.id !== id);
+  
+  if (state.lunaChats.length === 0) {
+    const defaultChat = { id: Date.now().toString(), name: "Sohbet 1", history: [] };
+    state.lunaChats.push(defaultChat);
+    state.currentLunaChatId = defaultChat.id;
+  } else if (state.currentLunaChatId === id) {
+    state.currentLunaChatId = state.lunaChats[0].id;
+  }
+  
+  saveLunaChats();
+  renderLunaChats();
+  if (state.currentLunaChatId) {
+    loadLunaChat(state.currentLunaChatId);
+  }
 }

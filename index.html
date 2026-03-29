@@ -269,7 +269,18 @@
     <!-- ═══════════════════════════════════ -->
     <section id="page-luna" class="page">
       <div class="page-inner chat-page">
+        <!-- Chat Drawer -->
+        <div id="chat-drawer" class="chat-drawer">
+          <div class="drawer-header">
+            <h3 class="gold-text">My Chats</h3>
+            <button class="btn-icon" onclick="toggleChatDrawer()">✕</button>
+          </div>
+          <button class="btn-gold btn-new-chat" onclick="createNewLunaChat()">+ Yeni Sohbet</button>
+          <div id="chat-list" class="chat-list"></div>
+        </div>
+
         <div class="chat-header">
+          <button class="btn-icon hamburger-btn" onclick="toggleChatDrawer()">☰</button>
           <div class="luna-header-info">
             <span class="luna-avatar-sm">👑</span>
             <div>
