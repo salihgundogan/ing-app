@@ -63,8 +63,47 @@ function createStars() {
   }
 }
 
+// ─── Study Interruption Check ───
+function checkStudyInterrupt() {
+  if (state.currentPage === 'words') {
+    const inQuiz = document.getElementById('words-quiz')?.classList.contains('active') && 
+                   document.getElementById('quiz-results')?.classList.contains('hidden');
+    const inFlashcards = document.getElementById('words-flashcards')?.classList.contains('active');
+    
+    if (inQuiz || inFlashcards) {
+      if (!confirm("Çalışmayı yarım bırakıp çıkmak istediğine emin misin Prenses? 👑✨")) return false;
+      document.querySelectorAll('#page-words .sub-page').forEach(s => s.classList.remove('active'));
+      document.getElementById('words-topics')?.classList.add('active');
+    }
+  }
+  
+  if (state.currentPage === 'grammar') {
+    const inExercises = document.getElementById('grammar-exercises')?.classList.contains('active') && 
+                        document.getElementById('exercise-results')?.classList.contains('hidden');
+    if (inExercises) {
+      if (!confirm("Çalışmayı yarım bırakıp çıkmak istediğine emin misin Prenses? 👑✨")) return false;
+      document.querySelectorAll('#page-grammar .sub-page').forEach(s => s.classList.remove('active'));
+      document.getElementById('grammar-topics')?.classList.add('active');
+    }
+  }
+  
+  if (state.currentPage === 'conversation') {
+    const inChat = document.getElementById('convo-chat')?.classList.contains('active');
+    if (inChat) {
+      if (!confirm("Konuşmayı yarım bırakıp çıkmak istediğine emin misin Prenses? 👑✨")) return false;
+      document.querySelectorAll('#page-conversation .sub-page').forEach(s => s.classList.remove('active'));
+      document.getElementById('convo-picker')?.classList.add('active');
+    }
+  }
+
+  return true;
+}
+
 // ─── Navigation ───
 function navigateTo(page) {
+  if (page === state.currentPage) return;
+  if (!checkStudyInterrupt()) return;
+  
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(`page-${page}`).classList.add('active');
 
@@ -75,26 +114,35 @@ function navigateTo(page) {
   state.currentPage = page;
 
   // Reset sub-pages when navigating to main pages
-  if (page === 'words') showWordsSub('words-topics');
-  if (page === 'grammar') showGrammarSub('grammar-topics');
-  if (page === 'conversation') showConvoSub('convo-picker');
+  if (page === 'words') showWordsSub('words-topics', true);
+  if (page === 'grammar') showGrammarSub('grammar-topics', true);
+  if (page === 'conversation') showConvoSub('convo-picker', true);
 }
 
 function openConversationPicker() {
   navigateTo('conversation');
 }
 
-function showWordsSub(id) {
+function showWordsSub(id, skipCheck = false) {
+  if (!skipCheck && id === 'words-topics') {
+    if (!checkStudyInterrupt()) return;
+  }
   document.querySelectorAll('#page-words .sub-page').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function showGrammarSub(id) {
+function showGrammarSub(id, skipCheck = false) {
+  if (!skipCheck && id === 'grammar-topics') {
+    if (!checkStudyInterrupt()) return;
+  }
   document.querySelectorAll('#page-grammar .sub-page').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function showConvoSub(id) {
+function showConvoSub(id, skipCheck = false) {
+  if (!skipCheck && id === 'convo-picker') {
+    if (!checkStudyInterrupt()) return;
+  }
   document.querySelectorAll('#page-conversation .sub-page').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
@@ -661,9 +709,10 @@ async function sendConvoMessage() {
 }
 
 function endConversation() {
+  if (!confirm("Konuşmayı bitirmek istediğine emin misin Prenses? 👑✨")) return;
   state.convoHistory = [];
   state.convoExchanges = 0;
-  showConvoSub('convo-picker');
+  showConvoSub('convo-picker', true);
 }
 
 function addConvoBubble(sender, text) {
