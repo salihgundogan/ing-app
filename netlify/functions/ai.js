@@ -31,13 +31,13 @@ Make Luna's feedback encouraging and royal-themed with emojis.`;
 
     case "grammar_exercise":
       return `Generate 6 mixed exercises for this A1 grammar topic: "${payload.topic}".
-Mix of types: fill_blank, multiple_choice, and order (sentence ordering).
+Mix of types: fill_blank and multiple_choice ONLY. Do NOT use "order" or sentence ordering questions.
 Return ONLY a valid JSON array, no markdown, no explanation, no code fences:
 [
-  {"type": "fill_blank", "question": "I ___ a student.", "options": null, "words": null, "answer": "am", "luna_feedback": "Perfect, Princess! ✨"},
-  {"type": "multiple_choice", "question": "She ___ a teacher.", "options": ["am", "is", "are", "be"], "words": null, "answer": "is", "correct": 1, "luna_feedback": "Wonderful! 👑"},
-  {"type": "order", "question": "Put the words in order:", "options": null, "words": ["is", "She", "happy", "."], "answer": "She is happy.", "luna_feedback": "Amazing! 🌟"}
+  {"type": "fill_blank", "question": "I ___ a student. (Ben bir öğrenciyim.)", "options": null, "words": null, "answer": "am", "luna_feedback": "Perfect, Princess! ✨"},
+  {"type": "multiple_choice", "question": "She ___ a teacher.", "options": ["am", "is", "are", "be"], "words": null, "answer": "is", "correct": 1, "luna_feedback": "Wonderful! 👑"}
 ]
+CRITICAL: For "fill_blank" questions, you MUST include a hint or the Turkish translation in parentheses at the end of the sentence so the user exactly knows which word is missing. Examples: "She loves ___ (elmalar)." -> answer: "apples".
 Keep everything A1 level. Make Luna's feedback warm, encouraging and royal-themed.`;
 
     case "conversation":
