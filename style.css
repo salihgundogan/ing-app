@@ -749,6 +749,12 @@ body::before {
   color: var(--color-error);
 }
 
+#quiz-next-btn, #exercise-next-btn {
+  display: flex;
+  margin: 20px auto 0;
+  width: fit-content;
+}
+
 /* Results */
 .results-card {
   text-align: center;
