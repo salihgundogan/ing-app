@@ -1007,10 +1007,27 @@ body::before {
   display: flex;
   flex-direction: column;
   height: calc(100vh - var(--nav-height));
+  height: calc(100dvh - var(--nav-height)); /* fix for mobile URL bar/keyboard shifting */
   padding: 0;
   max-width: 800px;
   margin: 0 auto;
   overflow: hidden;
+}
+
+.chat-page .sub-page.active#convo-chat {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0; /* CRITICAL for nested flex-scrolling */
+  width: 100%;
+}
+
+.chat-page .sub-page.active#convo-picker {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 20px;
+  width: 100%;
 }
 
 .chat-header {
@@ -1048,6 +1065,7 @@ body::before {
 
 .chat-messages {
   flex: 1;
+  min-height: 0; /* Ensures container doesn't exceed screen size */
   overflow-y: auto;
   padding: 16px;
   display: flex;
